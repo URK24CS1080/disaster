@@ -6,7 +6,7 @@
 2. Generate two different application secrets. For example, run `openssl rand -hex 32` twice and assign the results to `SECRET_KEY` and `JWT_SECRET_KEY`.
 3. Set `BOOTSTRAP_ADMIN_EMAIL` and a unique `BOOTSTRAP_ADMIN_PASSWORD` of at least 15 characters. Set `BOOTSTRAP_ADMIN_NAME` and `BOOTSTRAP_ADMIN_PHONE` if desired.
 4. Leave `DEMO_MODE=false`, `APP_ENV=production`, `AUTO_MIGRATE=true`, and `COOKIE_SECURE=true`. These are already the Vercel defaults. Do not set `VITE_DEMO_MODE` on production builds.
-5. Optional but recommended for multi-instance beta traffic: provision Redis and set `RATELIMIT_STORAGE_URI` to its TLS `rediss://` URL. Database-backed account lockout remains active even when this is not configured.
+5. Optional but recommended for multi-instance beta traffic: provision Redis and set `RATELIMIT_STORAGE_URI` to its TLS `rediss://` URL. Account-level lockout is not persisted; the login endpoint remains per-IP throttled.
 6. Keep the Vercel application preset as **Services**, root directory `./`, frontend service `frontend` (Vite), and backend service `backend` (`index:app`). Deploy.
 
 ## Required environment variables
@@ -94,7 +94,7 @@ After cleanup, keep the bootstrap administrator as the only initial identity. Ci
 | Application hosting | Vercel Services project with frontend and backend services | None; both services are required |
 | Persistent database | Attached managed PostgreSQL/Neon resource and pooled TLS `DATABASE_URL` | None; readiness rejects SQLite in production |
 | Maps | Browser access to OpenStreetMap tiles; external navigation is advisory | Typed coordinates and address remain available |
-| Shared throttling | TLS Redis URL in `RATELIMIT_STORAGE_URI` for horizontally scaled traffic | Per-instance throttling plus database-backed account lockout |
+| Shared throttling | TLS Redis URL in `RATELIMIT_STORAGE_URI` for horizontally scaled traffic | Per-instance throttling without persistent account lockout |
 | Public alert delivery | Approved SMS/siren/radio provider or gateway, recipient governance, and a signed HTTPS endpoint in `ALERT_DELIVERY_WEBHOOK_URL` with a 32+ character HMAC secret | CAP-inspired alert and acknowledgement records inside the authenticated application only |
 | Online donations | Approved hosted checkout in `DONATION_PAYMENT_URL` plus the provider's independent settlement/reconciliation process | Auditable pledge records; no money is represented as collected |
 | AI explanations | Reachable, privacy-approved Ollama service in `OLLAMA_BASE_URL` | Deterministic, tested scoring without transmitting personal data |

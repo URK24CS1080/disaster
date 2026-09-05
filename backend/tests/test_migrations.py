@@ -4,6 +4,7 @@ from sqlalchemy import inspect, text
 
 from app import create_app
 from app.bootstrap import (
+    ALERT_DELIVERY_REVISION,
     BASELINE_REVISION,
     HEAD_REVISION,
     MFA_REVISION,
@@ -14,7 +15,7 @@ from app.bootstrap import (
     initialize_database,
 )
 from app.extensions import db
-from app.models import AccountSecurity, User
+from app.models import User
 
 
 def build_migration_app(database_path):
@@ -87,7 +88,9 @@ def test_unversioned_legacy_database_is_stamped_upgraded_and_preserved(tmp_path)
 
         assert current_revision() == HEAD_REVISION
         assert db.session.get(User, legacy_user_id).email == "existing@example.com"
-        assert AccountSecurity.query.filter_by(user_id=legacy_user_id).one().failed_login_attempts == 0
+        assert {"failed_login_attempts", "locked_until"}.isdisjoint(
+            {column["name"] for column in inspect(db.engine).get_columns("account_security")}
+        )
         db.session.remove()
         db.engine.dispose()
 
@@ -198,6 +201,38 @@ def test_unversioned_recovery_release_upgrades_to_alert_delivery_tracking(tmp_pa
         } <= {
             column["name"] for column in inspect(db.engine).get_columns("emergency_alerts")
         }
+        assert current_revision() == HEAD_REVISION
+        db.session.remove()
+        db.engine.dispose()
+
+
+def test_account_lockout_columns_are_removed_from_existing_schema(tmp_path):
+    application = build_migration_app(tmp_path / "lockout-removal.db")
+    with application.app_context():
+        upgrade(directory=str(MIGRATIONS_DIRECTORY), revision=ALERT_DELIVERY_REVISION)
+        user = User(
+            name="Locked Operator",
+            email="locked@example.com",
+            phone="9000000003",
+            role="Citizen",
+            password_hash="existing-password-hash",
+        )
+        db.session.add(user)
+        db.session.commit()
+        db.session.execute(
+            text(
+                "INSERT INTO account_security "
+                "(user_id, failed_login_attempts, locked_until, last_login_at, password_changed_at, must_change_password) "
+                "VALUES (:user_id, 5, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0)"
+            ),
+            {"user_id": user.id},
+        )
+        db.session.commit()
+
+        initialize_database()
+
+        columns = {column["name"] for column in inspect(db.engine).get_columns("account_security")}
+        assert {"failed_login_attempts", "locked_until"}.isdisjoint(columns)
         assert current_revision() == HEAD_REVISION
         db.session.remove()
         db.engine.dispose()

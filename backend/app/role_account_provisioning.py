@@ -268,8 +268,6 @@ def _reissue_managed_credential(user, password):
 
     now = utcnow()
     user.password_hash = hash_password(password)
-    state.failed_login_attempts = 0
-    state.locked_until = None
     state.password_changed_at = now
     state.must_change_password = False
     AuthSession.query.filter_by(user_id=user.id, revoked_at=None).update(

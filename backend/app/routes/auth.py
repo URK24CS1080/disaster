@@ -220,8 +220,6 @@ def complete_password_reset():
     state = security_state(user)
     state.password_changed_at = now
     state.must_change_password = False
-    state.failed_login_attempts = 0
-    state.locked_until = None
     AuthSession.query.filter_by(user_id=user.id, revoked_at=None).update(
         {AuthSession.revoked_at: now},
         synchronize_session=False,
@@ -251,25 +249,13 @@ def login():
         db.session.commit()
         return jsonify({"error": "Invalid email or password"}), 401
 
-    state = security_state(user)
-    now = utcnow()
-    locked_until = state.locked_until
-    if locked_until is not None and (locked_until.replace(tzinfo=now.tzinfo) if locked_until.tzinfo is None else locked_until) > now:
-        audit_event("account.login", "blocked", user.id, "account_locked")
-        db.session.commit()
-        return jsonify({"error": "Account temporarily locked. Try again later."}), 429
-
     if not password_valid:
-        state.failed_login_attempts += 1
-        if state.failed_login_attempts >= 5:
-            state.locked_until = now + timedelta(minutes=15)
-            state.failed_login_attempts = 0
         audit_event("account.login", "failure", user.id, "invalid_credentials")
         db.session.commit()
         return jsonify({"error": "Invalid email or password"}), 401
 
-    state.failed_login_attempts = 0
-    state.locked_until = None
+    state = security_state(user)
+    now = utcnow()
     state.last_login_at = now
     response = session_response(user)
     audit_event("account.login", "success", user.id)

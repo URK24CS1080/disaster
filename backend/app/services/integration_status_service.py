@@ -77,7 +77,7 @@ def integration_readiness():
             "Shared request throttling",
             rate_limit_storage.startswith("rediss://"),
             "TLS Redis shared throttling",
-            "Per-instance throttling plus database-backed account lockout",
+            "Per-instance throttling without persistent account lockout",
             ["RATELIMIT_STORAGE_URI"],
         ),
         _integration(

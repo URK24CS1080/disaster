@@ -19,7 +19,7 @@ A persistent PostgreSQL database is mandatory for a real beta. Vercel Functions 
 
 - Revocable server-side sessions in `Secure`, `HttpOnly`, `SameSite=Lax` cookies
 - CSRF validation for cookie-authenticated writes and short-lived bearer tokens for API clients
-- 15-character minimum passwords, scrypt hashing, login throttling, and timed account lockout
+- 15-character minimum passwords, scrypt hashing, and per-IP login throttling without persistent account lockout
 - Mandatory replacement of administrator-issued temporary passwords before any operational API is available
 - Direct password sign-in to a server-authorized, role-locked workspace
 - Hashed, expiring, single-use email password-recovery tokens with full session revocation after reset

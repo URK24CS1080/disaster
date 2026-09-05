@@ -192,8 +192,6 @@ def reset_user_password(user_id):
     state = security_state(target)
     state.password_changed_at = utcnow()
     state.must_change_password = True
-    state.failed_login_attempts = 0
-    state.locked_until = None
     AuthSession.query.filter_by(user_id=target.id, revoked_at=None).update(
         {AuthSession.revoked_at: utcnow()}, synchronize_session=False
     )

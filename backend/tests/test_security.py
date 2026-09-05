@@ -62,7 +62,7 @@ def test_api_rejects_non_object_json_without_server_error(client):
     assert response.headers["X-Request-ID"] == "invalid-json-shape-001"
 
 
-def test_password_policy_and_account_lockout(client, app):
+def test_password_policy_and_failed_logins_do_not_lock_account(client, app):
     weak = client.post(
         "/api/v1/auth/register",
         json={"name": "Weak", "email": "weak@example.com", "phone": "1", "role": "Citizen", "password": "password123"},
@@ -71,11 +71,11 @@ def test_password_policy_and_account_lockout(client, app):
 
     with app.app_context():
         seed_demo_data()
-    for _ in range(5):
+    for _ in range(20):
         failure = client.post("/api/v1/auth/login", json={"email": "admin@rescue.local", "password": "wrong-password-value"})
         assert failure.status_code == 401
-    locked = client.post("/api/v1/auth/login", json={"email": "admin@rescue.local", "password": "DemoPassword123!"})
-    assert locked.status_code == 429
+    login = client.post("/api/v1/auth/login", json={"email": "admin@rescue.local", "password": "DemoPassword123!"})
+    assert login.status_code == 200
 
 
 def test_readiness_and_production_configuration_gate(client, app):

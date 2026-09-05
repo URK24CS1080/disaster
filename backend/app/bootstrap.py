@@ -16,7 +16,8 @@ SECURITY_REVISION = "20260721_02"
 MFA_REVISION = "20260721_03"
 ONBOARDING_REVISION = "20260727_04"
 RECOVERY_REVISION = "20260729_05"
-HEAD_REVISION = "20260729_06"
+ALERT_DELIVERY_REVISION = "20260729_06"
+HEAD_REVISION = "20260905_07"
 SECURITY_TABLES = {"account_security", "audit_events", "auth_sessions"}
 MFA_TABLES = {"mfa_credentials", "mfa_challenges"}
 RECOVERY_TABLES = {"password_reset_tokens"}
@@ -129,7 +130,7 @@ def apply_schema_migrations():
                                 "delivery_attempted_at",
                             }
                             legacy_revision = (
-                                HEAD_REVISION
+                                ALERT_DELIVERY_REVISION
                                 if delivery_columns <= alert_columns
                                 else RECOVERY_REVISION
                             )

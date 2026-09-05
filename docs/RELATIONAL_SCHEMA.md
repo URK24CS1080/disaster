@@ -4,7 +4,7 @@
 
 - `users(id, name, email, phone, role, password_hash, is_active, created_at)`
 - `role_profiles(id, user_id, organization_name, address, latitude, longitude, hospital_id, shelter_id, ambulance_id, verification_status)`
-- `account_security(id, user_id, failed_login_attempts, locked_until, last_login_at, password_changed_at, must_change_password)`
+- `account_security(id, user_id, last_login_at, password_changed_at, must_change_password)`
 - `auth_sessions(id, user_id, token_hash, csrf_hash, user_agent, created_at, last_seen_at, idle_expires_at, absolute_expires_at, revoked_at, mfa_state)`
 - `password_reset_tokens(id, user_id, token_hash, created_at, expires_at, consumed_at)`
 - `mfa_credentials(id, user_id, secret_ciphertext, recovery_code_hashes, enabled_at, last_used_step, created_at)`

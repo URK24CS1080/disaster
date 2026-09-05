@@ -30,6 +30,6 @@
 | `location_pings` | Stores explicitly consented device locations and accuracy | `user_id`, optional rescue/supply case, coordinates, `consent_granted` |
 | `response_dispatches` | Audits automatic proximity allocation | `rescue_request_id`, `responder_type`, `responder_name`, `distance_km`, `status` |
 | `responder_units` | Registers professional rescue, fire, police, and medical field units | `unit_type`, `skills`, location, `availability_status` |
-| `account_security` | Stores account lockout and temporary-password state | `failed_login_attempts`, `locked_until`, `password_changed_at`, `must_change_password` |
+| `account_security` | Stores login timestamps and temporary-password state | `last_login_at`, `password_changed_at`, `must_change_password` |
 | `auth_sessions` | Stores hashed, revocable browser/API sessions | `token_hash`, `csrf_hash`, idle/absolute expiry, `mfa_state`, `revoked_at` |
 | `password_reset_tokens` | Stores hashed, expiring, single-use password-recovery grants | `user_id`, `token_hash`, `expires_at`, `consumed_at` |
