@@ -7,6 +7,10 @@ test('public account modes isolate credentials and recovery tokens', async ({ pa
   await page.getByLabel('Email').fill('mode-switch-test@example.invalid');
   await expect(page.getByLabel('Password')).not.toHaveAttribute('minlength');
   await page.getByLabel('Password').fill('Browser-Smoke-Only-Password-91');
+  await page.getByRole('button', { name: 'Show password', exact: true }).click();
+  await expect(page.getByLabel('Password')).toHaveAttribute('type', 'text');
+  await page.getByRole('button', { name: 'Hide password', exact: true }).click();
+  await expect(page.getByLabel('Password')).toHaveAttribute('type', 'password');
   await page.getByRole('button', { name: 'Create an account' }).click();
 
   await expect(page.getByRole('heading', { name: 'Create a citizen or volunteer account' })).toBeVisible();

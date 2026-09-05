@@ -324,6 +324,18 @@ button {
   background: #e7f2ef;
 }
 
+.topbar-tools .logout-action {
+  color: #8d352b;
+  border: 1px solid #e7c9c2;
+  background: #fff8f6;
+}
+
+.topbar-tools .logout-action:hover {
+  color: #fff;
+  border-color: #8d352b;
+  background: #8d352b;
+}
+
 .topbar-tools .primary-action {
   min-width: 0;
   padding: 9px 16px;
@@ -1252,6 +1264,40 @@ button {
   min-height: 42px;
   border-color: #d8d7ce;
   border-radius: 8px;
+}
+
+.input-with-toggle {
+  position: relative;
+}
+
+.input-with-toggle .form-control {
+  padding-right: 48px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  color: #667680;
+  border-radius: 7px;
+  background: transparent;
+  transform: translateY(-50%);
+}
+
+.password-toggle:hover {
+  color: #171717;
+  background: #eeeeea;
+}
+
+.password-toggle:focus-visible {
+  outline: 2px solid #171717;
+  outline-offset: 2px;
 }
 
 .form-control:focus,

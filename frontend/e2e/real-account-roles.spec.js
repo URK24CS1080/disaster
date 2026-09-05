@@ -73,13 +73,11 @@ async function expectWorkspace(page, account) {
   await expect(rolePicker).toHaveValue(account.role);
   await expect(rolePicker).toBeDisabled();
   await expect(page.getByRole('button', { name: 'Live API', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Log out', exact: true })).toBeVisible();
 }
 
-async function signOut(page, account) {
-  const signOutButton = page.getByRole('button', { name: 'Sign out', exact: true });
-  if (!(await signOutButton.isVisible())) {
-    await page.getByRole('button', { name: account.name, exact: true }).click();
-  }
+async function signOut(page) {
+  const signOutButton = page.getByRole('button', { name: 'Log out', exact: true });
   await signOutButton.click();
   await expect(page.getByRole('heading', { name: 'Sign in to your operational account' })).toBeVisible();
 }
@@ -96,7 +94,7 @@ test.describe('production-mode account acceptance', () => {
       await submitPassword(page, account);
 
       await expectWorkspace(page, account);
-      await signOut(page, account);
+      await signOut(page);
     }
   });
 });

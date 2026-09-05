@@ -30,6 +30,9 @@ import {
   Gauge,
   HeartPulse,
   Home,
+  Eye,
+  EyeOff,
+  LogOut,
   MapPin,
   Megaphone,
   MessageSquare,
@@ -1524,6 +1527,17 @@ export default function App() {
               <UserRound size={16} />
               {sessionMode === 'account' ? currentUser?.name || activeRole : `${activeRole} demo`}
             </button>
+            {sessionMode === 'account' && currentUser && (
+              <button
+                type="button"
+                className="logout-action"
+                onClick={signOut}
+                title="Log out of your account"
+              >
+                <LogOut size={16} />
+                Log out
+              </button>
+            )}
             <button
               type="button"
               className="primary-action"
@@ -4052,10 +4066,28 @@ function FacilityPanel({ title, icon: Icon, children }) {
 }
 
 function Input({ label, name, value, onChange, type = 'text', required = false, step, minLength, autoComplete, inputMode }) {
+  const [showPassword, setShowPassword] = useState(false);
+  const isPassword = type === 'password';
+  const inputType = isPassword && showPassword ? 'text' : type;
+
   return (
     <label className="form-field">
       <span>{label}</span>
-      <input className="form-control" name={name} type={type} step={step} minLength={minLength} autoComplete={autoComplete} inputMode={inputMode} value={value} required={required} onChange={(event) => onChange(event.target.value)} />
+      <div className="input-with-toggle">
+        <input className="form-control" name={name} type={inputType} step={step} minLength={minLength} autoComplete={autoComplete} inputMode={inputMode} value={value} required={required} onChange={(event) => onChange(event.target.value)} />
+        {isPassword && (
+          <button
+            type="button"
+            className="password-toggle"
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            aria-pressed={showPassword}
+            title={showPassword ? 'Hide password' : 'Show password'}
+            onClick={() => setShowPassword((visible) => !visible)}
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        )}
+      </div>
     </label>
   );
 }
