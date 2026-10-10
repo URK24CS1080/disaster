@@ -63,7 +63,7 @@ const roleAccounts = [
 async function submitPassword(page, account) {
   await expect(page.getByRole('heading', { name: 'Sign in to your operational account' })).toBeVisible();
   await page.getByLabel('Email').fill(account.email);
-  await page.getByLabel('Password').fill(accountPassword);
+  await page.locator('input[name="password"]').fill(accountPassword);
   await page.getByRole('button', { name: 'Sign in', exact: true }).click();
 }
 
