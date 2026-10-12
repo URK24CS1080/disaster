@@ -197,3 +197,13 @@ jobs:
 
           cd frontend
           REAL_ACCOUNT_E2E=true BASE_URL=http://127.0.0.1:5173 npm run test:e2e -- e2e/real-account-roles.spec.js --project=chromium
+      - name: Preserve isolated account acceptance diagnostics
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: account-browser-diagnostics
+          retention-days: 3
+          path: |
+            frontend/test-results/
+            ${{ runner.temp }}/resq-account-backend.log
+            ${{ runner.temp }}/resq-account-frontend.log

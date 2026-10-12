@@ -79,7 +79,13 @@ async function expectWorkspace(page, account) {
 
 async function signOut(page) {
   const signOutButton = page.getByRole('button', { name: 'Log out', exact: true });
-  await signOutButton.click();
+  const [response] = await Promise.all([
+    page.waitForResponse((item) => (
+      item.url().endsWith('/api/v1/auth/logout') && item.request().method() === 'POST'
+    )),
+    signOutButton.click(),
+  ]);
+  expect(response.status()).toBe(200);
   await expect(page.getByRole('heading', { name: 'Sign in to your operational account' })).toBeVisible();
 }
 
@@ -89,6 +95,10 @@ test.describe('production-mode account acceptance', () => {
 
   test('every supported role signs in directly to its role-locked workspace', async ({ page }) => {
     test.setTimeout(180_000);
+    page.on('pageerror', (error) => console.error(`Browser runtime error: ${error.message}`));
+    page.on('requestfailed', (request) => console.error(
+      `Request failed: ${request.method()} ${new URL(request.url()).pathname} ${request.failure()?.errorText}`,
+    ));
 
     await page.goto('/');
     const demoLink = page.getByRole('link', { name: 'Play demo', exact: true });
